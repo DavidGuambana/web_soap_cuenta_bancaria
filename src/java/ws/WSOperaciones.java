@@ -1,36 +1,45 @@
 package ws;
 
-import data.Data;
-import data.Producto;
-import java.util.ArrayList;
+import controlador.principal;
 import javax.jws.WebService;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import modelo.Usuario;
 
 @WebService(serviceName = "WSOperaciones")
 public class WSOperaciones {
 
-    public Data data = new Data();
+    public principal control = new principal();
 
     public WSOperaciones() {
-        data.crearProductos();
+        control.crearCuentasBancarias();
+    }
+
+    @WebMethod(operationName = "addCuenta")
+    public Boolean addCuenta(@WebParam(name = "Usuario") Usuario usuario) {
+        System.out.println(usuario);
+        control.getCuentas().add(usuario);
+        return true;
+    }
+
+    @WebMethod(operationName = "getCuenta")
+    public Usuario getCuenta(@WebParam(name = "usuario") String user, @WebParam(name = "clave") String clave) {
+        for (Usuario usuario : control.getCuentas()) {
+            if (usuario.getUsuario().equals(user) && usuario.getClave().equals(clave)) {
+                return usuario;
+            }
+        }
+        return null;
     }
     
-    @WebMethod(operationName = "Login")
-    public Boolean Login(@WebParam(name = "username") String username, @WebParam(name = "password") String password) {
-        return username.equals("david777") && password.equals("1234");
-    }
-
-    @WebMethod(operationName = "getProductosByClaveValor")
-    public ArrayList<Producto> getProductosByClaveValor(@WebParam(name = "clave") String clave, @WebParam(name = "valor") String valor) {
-        return data.getProductosByClaveValor(clave, valor);
-    }
-
-    @WebMethod(operationName = "setProducto")
-    public Boolean setProducto(@WebParam(name = "id") int id, @WebParam(name = "nombre") String nombre, @WebParam(name = "precio") double precio, @WebParam(name = "stock") int stock, @WebParam(name = "categoria") String categoria, @WebParam(name = "proveedor") String proveedor) {
-        Producto producto = new Producto(id, nombre, precio, stock, categoria, proveedor);
-        return data.setProducto(producto);
+    @WebMethod(operationName = "updateUsuario")
+    public boolean updateCuenta(@WebParam(name = "Usuario") Usuario user) {
+        for (Usuario usuario : control.getCuentas()) {
+            if (usuario.getUsuario().equals(user.getUsuario()) && usuario.getClave().equals(user.getClave())) {
+                usuario.setDinero(user.getDinero());
+                return true;
+            }
+        }
+        return false;
     }
 }
-    
-    
